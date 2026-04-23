@@ -1,0 +1,18 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main] # Workflow only triggers when changes are pushed to main branch
+
+jobs:
+  build: # Job name, could be anything
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: latest
