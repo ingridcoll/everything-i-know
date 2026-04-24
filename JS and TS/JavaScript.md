@@ -69,9 +69,9 @@ In-browser JavaScript can do everything related to webpage manipulation, interac
 
 A semicolon may be omitted in most cases when a line break exists. It is **possible** to leave out semicolons most of the time. But it’s **safer** – especially for a beginner – to use them.
 
-`let` – is a modern variable declaration.
-`var` – is an old-school variable declaration. Normally we don’t use it at all, found only in legacy code.
-`const` – is like `let`, but the value of the variable can’t be changed.
+- `let` – is a modern variable declaration.
+- `var` – is an old-school variable declaration. Normally we don’t use it at all, found only in legacy code.
+- `const` – is like `let`, but the value of the variable can’t be changed.
 
 To create a variable in JavaScript, use the `let` keyword. We can put some data into it by using the assignment operator `=`.
 

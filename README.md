@@ -1,10 +1,16 @@
-# Everything I know
+# Everything I Know
 
 For the fifth time, I am getting serious about my learning. Time and time again, I have tried to **lock in** and learn everything I needed to know _once and for all_. Well, here I am again. Starting a new repository to see my progress over time and, hopefully, motivate me enough to keep pushing.
 
 As cringe as it sounds, I want to be someone that builds things. I want to be confident in my own skills, and let go of any self-doubt or self-imposed limitations. Step by step, I'll build up my bank of knowledge, and document it here. It's not really about having a bunch of polished notes on everything I learn, but about the jOuRneY. I read somewhere recently that it doesn't make sense for me to continue wanting something, if I am not willing to do what it takes to get it. To crave the result, but not the process, is guaranteed disappointment.
 
 Also, I can use my notes as a quick reference too.
+
+**Note**: Most of the content in these files has NOT been written by me. At the top of each file, there is a references section that specifies where I am getting the content from. I encourage anyone that is reading this, to visit the original resource. This repository's goal is for me to keep track of my knowledge, as well as use it as a reference book or cheat sheet when working on my projects.
+
+## April 24th, 2026
+
+### The plan
 
 The current plan I am committing to for the next 365 days:
 
@@ -16,9 +22,7 @@ The current plan I am committing to for the next 365 days:
 
 The more things I build, the more problems I get exposed to, the more I learn organically.
 
-**Note**: Most of the content in these files has NOT been written by me. At the top of each file, there is a references section that specifies where I am getting the content from. I encourage anyone that is reading this, to visit the original resource. This repository's goal is for me to keep track of my knowledge, as well as use it as a reference book or cheat sheet when working on my projects.
-
-# April 24th, 2026 - How I ended up where I am at today
+### How I ended up where I am at today
 
 I kinda stumbled upon coding. It was not a deliberate choice.
 
