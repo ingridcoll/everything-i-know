@@ -1,46 +1,50 @@
-# DevOps from Zero to Hero: Build and Deploy a Production API
+# Everything I Know About DevOps
 
-To get a refresher on DevOps concepts, I'm following this video: [DevOps from Zero to Hero: Build and Deploy a Production API](https://www.youtube.com/watch?v=H5FAxTBuNM8) from JavaScript Mastery.
+**Started:** _April 22nd, 2026_
 
-**Started:** April 22nd, 2026
+**Note:** This section compiles different lessons from courses and other learning resources. Most of the theory was not written by me. These are the **references** for most of the knowledge in this section:
 
-## Tech Stack & Learning Goals
+- [DevOps from Zero to Hero: Build and Deploy a Production API - JavaScript Mastery](https://www.youtube.com/watch?v=H5FAxTBuNM8)
 
-- [DevOps from Zero to Hero: Build and Deploy a Production API](#devops-from-zero-to-hero-build-and-deploy-a-production-api)
-  - [Tech Stack \& Learning Goals](#tech-stack--learning-goals)
-  - [Learning Journal](#learning-journal)
-    - [Git/GitHub for Version Control (avoids losing your code)](#gitgithub-for-version-control-avoids-losing-your-code)
-      - [Setting up Git](#setting-up-git)
-      - [Branching and merging](#branching-and-merging)
-      - [Adding files to track and committing them locally](#adding-files-to-track-and-committing-them-locally)
-      - [To push your local repository to the cloud, use GitHub](#to-push-your-local-repository-to-the-cloud-use-github)
-      - [Fetch changes from the remote repository to your local folder](#fetch-changes-from-the-remote-repository-to-your-local-folder)
-    - [CI/CD Pipelines (automates builds, tests and deployment)](#cicd-pipelines-automates-builds-tests-and-deployment)
-      - [Workflows with GitHub Actions and YAML syntax](#workflows-with-github-actions-and-yaml-syntax)
-        - [Sample GitHub Actions workflow that builds and tests an app](#sample-github-actions-workflow-that-builds-and-tests-an-app)
-    - [Containerization with Docker (makes code run isolated on any machine/device)](#containerization-with-docker-makes-code-run-isolated-on-any-machinedevice)
-      - [Docker images](#docker-images)
-      - [Docker containers](#docker-containers)
-      - [Docker volume](#docker-volume)
-      - [Docker network](#docker-network)
-      - [How Docker works in the backend](#how-docker-works-in-the-backend)
-      - [The Dockerfile](#the-dockerfile)
-        - [Dockerfile syntax](#dockerfile-syntax)
-      - [Building an image and starting it in a container](#building-an-image-and-starting-it-in-a-container)
-      - [Port mapping](#port-mapping)
-      - [Rebuilding the container when the code changes](#rebuilding-the-container-when-the-code-changes)
-      - [Docker Compose](#docker-compose)
-    - [Kubernetes](#kubernetes)
+**Table of Contents**
 
-## Learning Journal
+- [Everything I Know About DevOps](#everything-i-know-about-devops)
+  - [Git/GitHub for Version Control (avoids losing your code)](#gitgithub-for-version-control-avoids-losing-your-code)
+    - [Setting up Git](#setting-up-git)
+    - [Branching and merging](#branching-and-merging)
+    - [Adding files to track and committing them locally](#adding-files-to-track-and-committing-them-locally)
+    - [To push your local repository to the cloud, use GitHub](#to-push-your-local-repository-to-the-cloud-use-github)
+    - [Fetch changes from the remote repository to your local folder](#fetch-changes-from-the-remote-repository-to-your-local-folder)
+  - [CI/CD Pipelines (automates builds, tests and deployment)](#cicd-pipelines-automates-builds-tests-and-deployment)
+    - [Workflows with GitHub Actions and YAML syntax](#workflows-with-github-actions-and-yaml-syntax)
+      - [Sample GitHub Actions workflow that builds and tests an app](#sample-github-actions-workflow-that-builds-and-tests-an-app)
+  - [Containerization with Docker (makes code run isolated on any machine/device)](#containerization-with-docker-makes-code-run-isolated-on-any-machinedevice)
+    - [Docker images](#docker-images)
+    - [Docker containers](#docker-containers)
+    - [Docker volume](#docker-volume)
+    - [Docker network](#docker-network)
+    - [How Docker works in the backend](#how-docker-works-in-the-backend)
+    - [The Dockerfile](#the-dockerfile)
+      - [Dockerfile syntax](#dockerfile-syntax)
+    - [Building an image and starting it in a container](#building-an-image-and-starting-it-in-a-container)
+    - [Port mapping](#port-mapping)
+    - [Rebuilding the container when the code changes](#rebuilding-the-container-when-the-code-changes)
+    - [Docker Compose](#docker-compose)
+  - [Kubernetes](#kubernetes)
+    - [Pods](#pods)
+    - [Cluster](#cluster)
+    - [ReplicaSet](#replicaset)
+    - [Deployment](#deployment)
+    - [Service](#service)
+    - [ConfigMaps \& Secrets](#configmaps--secrets)
+    - [Ingress](#ingress)
+    - [Volumes](#volumes)
 
-_April 22nd, 2026_
-
-### Git/GitHub for Version Control (avoids losing your code)
+## Git/GitHub for Version Control (avoids losing your code)
 
 Tracks and manages code changes over time.
 
-#### Setting up Git
+### Setting up Git
 
 ```bash
 # Install and check it's working
@@ -58,7 +62,7 @@ git branch -m main
 git config --global init.defaultBranch main
 ```
 
-#### Branching and merging
+### Branching and merging
 
 ```bash
 git branch <branchName> # Creates a new branch
@@ -67,7 +71,7 @@ git checkout -b <branchName> # Creates AND switches to a new branch
 git branch <newBranchName> <sourceBranch> # Creates new branch BASED on a specific branch, usually main or develop
 ```
 
-#### Adding files to track and committing them locally
+### Adding files to track and committing them locally
 
 ```bash
 git status # This will show which files .git is not tracking yet
@@ -83,7 +87,7 @@ git checkout <gitID> # Like 1234bd7c5afba1231dw204d1234f86cea40a5
 git checkout -f main
 ```
 
-#### To push your local repository to the cloud, use GitHub
+### To push your local repository to the cloud, use GitHub
 
 1. Create a repository in GitHub using the UI
 2. Back in the IDE's terminal:
@@ -100,7 +104,7 @@ git push --set-upstream origin <localBranch> # Links the local branch to a new r
 # If in the same branch, you can run git push all other times, since branch is already linked to cloud
 ```
 
-#### Fetch changes from the remote repository to your local folder
+### Fetch changes from the remote repository to your local folder
 
 ```bash
 git pull
@@ -108,11 +112,11 @@ git pull
 
 _April 23rd, 2026_
 
-### CI/CD Pipelines (automates builds, tests and deployment)
+## CI/CD Pipelines (automates builds, tests and deployment)
 
 Continuous Integration and Continuous Delivery pipelines are sets of automated steps that happen after code is pushed to a repository, up until it's deployed to production.
 
-#### Workflows with GitHub Actions and YAML syntax
+### Workflows with GitHub Actions and YAML syntax
 
 GitHub Actions are workflows built into GitHub, that live in a `.github/workflows` folder in the repository. Each workflow is a YAML file that describes:
 
@@ -130,7 +134,7 @@ YAML is white-space sensitive, indentation matters, and only accepts spaces (no 
 
 [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
 
-##### Sample GitHub Actions workflow that builds and tests an app
+#### Sample GitHub Actions workflow that builds and tests an app
 
 Sample workflow that builds the application whenever changes are pushed to the `main` branch, installs dependencies and runs the test script:
 
@@ -163,7 +167,7 @@ jobs:
 
 More pre-built actions available in the [marketplace](https://github.com/marketplace?type=actions).
 
-### Containerization with Docker (makes code run isolated on any machine/device)
+## Containerization with Docker (makes code run isolated on any machine/device)
 
 - Consistency across environments
 - Isolation, no dependency conflict
@@ -172,7 +176,7 @@ More pre-built actions available in the [marketplace](https://github.com/marketp
 - Version control
 - Easy to scale up or down
 
-#### Docker images
+### Docker images
 
 Lightweight, standalone, executable package that includes everything needed to run a piece of software.
 
@@ -182,19 +186,19 @@ Lightweight, standalone, executable package that includes everything needed to r
 - System tools
 - OS
 
-#### Docker containers
+### Docker containers
 
 Runnable instance of a Docker image. It's the execution environment of an application. A container reads an image, and executes all commands to download packages and run an application. Multiple containers can be run from the same Docker image, making it easy to scale up or down.
 
-#### Docker volume
+### Docker volume
 
 It's a persistent data storage mechanism that allows data to be shared between a Docker container and the host machine it's running on, or among containers. Ensures data consistency even if one container goes down, since it's like a shared folder outside of the container.
 
-#### Docker network
+### Docker network
 
 Communication channel that enables containers to talk to each other or the Internet. Allows containers to share services, while maintaining isolation.
 
-#### How Docker works in the backend
+### How Docker works in the backend
 
 The **Docker client** (`docker`) is the CLI application that lets us use commands to communicate with the Docker daemon (background process). For example, `docker build` instructs the Docker daemon service to start up the Docker container, which then pulls the Docker image and builds the environment needed for the app to run. The docker command uses the Docker API. The Docker client can communicate with more than one daemon. The Docker client and daemon can run on the same system, or you can connect a Docker client to a remote Docker daemon.
 
@@ -206,11 +210,11 @@ A **Docker registry** stores Docker images. Docker Hub is a public registry that
 
 **Docker Desktop** is an easy-to-install application for your Mac, Windows, or Linux environment that enables you to build and share containerized applications and microservices. Docker Desktop includes the Docker daemon (`dockerd`), the Docker client (`docker`), Docker Compose, Docker Content Trust, Kubernetes, and Credential Helper.
 
-#### The Dockerfile
+### The Dockerfile
 
 To create a Docker image, first create a Dockerfile. It contains instructions telling Docker how to build an image for an application. These instructions run any time the image is built.
 
-##### Dockerfile syntax
+#### Dockerfile syntax
 
 - `FROM`: Base image to use.
 - `WORKDIR`: Sets the working directory for the instructions to run on.
@@ -235,7 +239,7 @@ COPY . .
 CMD node hello.ts
 ```
 
-#### Building an image and starting it in a container
+### Building an image and starting it in a container
 
 ```bash
 # To build an image based on a Dockerfile
@@ -257,7 +261,7 @@ docker rm <dockerContainerID> # Only the first 3 digits of the container ID show
 
 **Best practice:** In the Dockerfile, it is recommended to create a user first via commands (`RUN addgroup app && adduser -S -G app app`), instead of executing the Dockerfile with the root user.
 
-#### Port mapping
+### Port mapping
 
 Even though the Dockerfile specifies a port (`EXPOSE`) it's listening to, the host machine does not expose that port by default. To enable it, when building the container, run:
 
@@ -275,7 +279,7 @@ If using Vite, you might to also expose the port in its settings. Test this by s
 
 Vite should now expose the URL to see the app in the logs when building the container.
 
-#### Rebuilding the container when the code changes
+### Rebuilding the container when the code changes
 
 If we make any changes to our local code, the app running in the Docker container won't show them. That's because any time we build the image, all of our code files are copied into the host machine, inside the Docker container.
 
@@ -290,7 +294,7 @@ docker run -p 5173:5173 -v "$(pwd):/app" -v /app/node_modules docker-app
 - `-v "$(pwd):/app"`: Mounts a volume using the format `host_path:container_path`. `$(pwd)` is a shell command that outputs your current working directory. So if you're in `/home/ingrid/myapp`, this becomes `-v /home/ingrid/myapp:/app`. The container's `/app` directory and your project folder share the same files in real time. You edit a file on your host → the container sees it immediately → Vite hot reload triggers. It's like saying "replace `/app` inside the container with my local folder."
 - `-v /app/node_modules`: This second `-v` says "but for `/app/node_modules` specifically, ignore what the host copied in and use a separate Docker-managed folder instead." That separate folder contains the `node_modules` that was built for Linux during `docker build`. If you `npm install` on your Mac, your local `node_modules` has Mac binaries. Mount that into a Linux container and things break. This pattern keeps the Linux-built `node_modules` from the image untouched, isolated from your host folder.
 
-#### Docker Compose
+### Docker Compose
 
 Docker Compose lets you define and run multi-container setups in a single YAML file instead of writing long docker run commands. We can define different services (for example, the app, the database, etc.) in a single file (`docker-compose.yml`), and Docker builds a container for each.
 
@@ -329,4 +333,67 @@ docker compose up
 
 Everything starts together, on the same internal network, so your app can reach the database at `db:5432` without any extra config.
 
-### Kubernetes
+## Kubernetes
+
+A single container has a ceiling. When traffic grows, one container can't handle all the requests. CPU and memory become bottlenecks. Two problems with one container:
+
+- Capacity — it can only handle so much traffic
+- Single point of failure — if it crashes, your app goes down
+
+You need multiple copies (replicas) of your container running at the same time, and an automated way to manage them. Kubernetes (abbreviated K8s — 8 letters between K and S) is an open-source container orchestration platform.
+
+Docker gives you containers. Kubernetes decides how, where, and when they run. Kubernetes handles:
+
+- Running your app across multiple machines
+- Scaling replicas up and down based on traffic
+- Restarting crashed containers automatically
+- Distributing traffic evenly across replicas
+- Rolling out updates with zero downtime
+
+Without Kubernetes you'd be manually starting/stopping containers, tracking IP addresses, restarting crashes, and scaling by hand.
+
+### Pods
+
+You don't run containers directly in Kubernetes. Containers are wrapped in pods. A pod is the smallest deployable unit in Kubernetes. One container per pod (usually). Each pod gets its own IP address. You interact with pods, not containers directly.
+
+### Cluster
+
+A group of machines (physical or virtual) that work together as one system. Made up of two parts:
+
+- Control Plane: Decides, schedules, and monitors health.
+- Worker Nodes: The machines where your containers actually run.
+
+Each worker node runs:
+
+- `kubelet` — an agent that talks to the control plane
+- Container runtime — e.g. Docker, runs the containers
+- `kube-proxy` — handles networking and routing inside the cluster
+
+### ReplicaSet
+
+Ensures a set number of pods are always running. You declare: "I want 3 replicas" and Kubernetes makes sure 3 pods are always up. If one pod dies, Kubernetes spins up a new one automatically.
+
+### Deployment
+
+A higher-level object that manages ReplicaSets. Lets you define and push updates to your app. Supports rolling updates — replaces old pods gradually so users see no downtime. If a pod crashes, it creates a new one. You describe the desired state. Kubernetes matches it.
+
+### Service
+
+Pods are temporary, they come and go, and each time they get a new IP. A Service solves this. A stable endpoint (permanent IP or DNS name). Automatically routes traffic to available pods. Load balances requests across replicas.
+
+### ConfigMaps & Secrets
+
+Apps need config and credentials. Kubernetes handles this securely.
+
+- ConfigMap — stores non-sensitive config (e.g. database URL)
+- Secret — stores sensitive data (e.g. passwords, API keys)
+
+Both are injected into pods without baking them into your Docker image.
+
+### Ingress
+
+Exposes your app to the outside world via HTTP/HTTPS routes. Example: maps `api.myapp.com` → your backend service.
+
+### Volumes
+
+Containers are ephemeral — data is lost if they restart. Kubernetes Volumes provide persistent storage.
