@@ -2,7 +2,7 @@
 
 **Started:** _October 16th, 2025_
 
-**Note:** This section compiles different lessons and courses I'm taking to develop this project. Most of the theory was not written by me. These are the **references** for most of the knowledge in this section:
+**Note:** This section compiles different lessons from courses and other learning resources. Most of the theory was not written by me. These are the **references** for most of the knowledge in this section:
 
 - [The Modern JavaScript Tutorial](https://javascript.info/)
 
