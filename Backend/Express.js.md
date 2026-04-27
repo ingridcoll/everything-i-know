@@ -48,7 +48,11 @@ app.listen(3000, console.log(`Server is running on http://localhost:${port}`));
 
 Then, add the script `node server.js` to your `package.json` to start up the server.
 
-You can also add routers to avoid repeating code like the pre-fix of each API route. For example, if your API starts with `/api/v1/pokemon`:
+## Developing an API
+
+### Router
+
+You can add routers to avoid repeating code like the pre-fix of each API route. For example, if your API starts with `/api/v1/pokemon`:
 
 ```javascript
 // server.js
@@ -76,3 +80,102 @@ app.use("/api/v1/pokemon", router); // Define API pre-fix
 
 app.listen(3000, console.log(`Server is running on http://localhost:${port}`));
 ```
+
+### Middleware (for parsing JSON)
+
+Express makes it easy to add middleware. For example, we want to be able to parse JSON requests and responses. Simply add `app.use(express.json())` when creating the server.
+
+```javascript
+// server.js
+import express from "express";
+
+const app = express();
+
+const port = 3000;
+
+const router = express.Router();
+
+app.use(express.json()); // Middleware that parses JSON
+
+const pokemon = [
+  // Sample data
+  {
+    id: 1,
+    name: "Bulbasaur",
+    type: ["Grass", "Poison"],
+    base: {
+      HP: 45,
+      Attack: 49,
+      Defense: 49,
+      "Sp. Attack": 65,
+      "Sp. Defense": 65,
+      Speed: 45,
+    },
+    description:
+      "Bulbasaur can be seen napping in bright sunlight. There is a seed on its back. By soaking up the sun’s rays, the seed grows progressively larger.",
+    height: 0.7,
+    weight: 6.9,
+    evolves: true,
+  },
+  {
+    id: 2,
+    name: "Ivysaur",
+    type: ["Grass", "Poison"],
+    base: {
+      HP: 60,
+      Attack: 62,
+      Defense: 63,
+      "Sp. Attack": 80,
+      "Sp. Defense": 80,
+      Speed: 60,
+    },
+    description:
+      "There is a bud on this Pokémon’s back. To support its weight, Ivysaur’s legs and trunk grow thick and strong. If it starts spending more time lying in the sunlight, it’s a sign that the bud will bloom into a large flower soon.",
+    height: 1,
+    weight: 13,
+    evolves: true,
+  },
+  {
+    id: 3,
+    name: "Venusaur",
+    type: ["Grass", "Poison"],
+    base: {
+      HP: 80,
+      Attack: 82,
+      Defense: 83,
+      "Sp. Attack": 100,
+      "Sp. Defense": 100,
+      Speed: 80,
+    },
+    description:
+      "There is a large flower on Venusaur’s back. The flower is said to take on vivid colors if it gets plenty of nutrition and sunlight. The flower’s aroma soothes the emotions of people.",
+    height: 2,
+    weight: 100,
+    evolves: false,
+  },
+];
+
+router.get("/", (req, res) => {
+  res.json(pokemon); // Send the data array as response in JSON format
+});
+
+router.get("/:id", (req, res) => {
+  let pokemonId = req.params.id;
+  res.send(`Select Pokemon with ID #${pokemonId}`);
+});
+
+router.post("/", (req, res) => {
+  res.send("Create new Pokemon");
+});
+
+router.put("/:id", (req, res) => {
+  let pokemonId = req.params.id;
+  res.send(`Update Pokemon with ID #${pokemonId}`);
+});
+
+app.use("/api/v1/pokemon", router);
+
+app.listen(3000, console.log(`Server is running on http://localhost:${port}`));
+```
+
+### Looking uo records from an array

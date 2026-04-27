@@ -30,7 +30,7 @@ A few years ago, I realized that I've always had this limiting belief that progr
 
 In my first corporate job, right after college, I basically configured restaurant software for clients, something like "Can you add these food items and meals to our servers' tablets?". Glorified data-entry with no coding or transferable skills, since I was only learning how to configure the company's proprietary software. This company, by the way, ended up splitting in two eventually. I joined at the peak of their stock price, and it has only been going downhill since.
 
-I was extremely unhappy. I was hit by the dire realization we all experience once we understand how a capitalist society works, and what that means for our life trajectory. I got scared that this was going to be my life, working 40 years doing something I didn't care about, aimless, hoping the weekend comes fast enough. 5pm would come and, honestly, the afternoon made me even more depressed because I had no plans. I had just moved to Austin, Texas, and had 0 friends.
+I was extremely unhappy. I was hit by the dire realization we all experience once we work our first corporate job for a couple of months, and what that means for our life trajectory. I got scared that this was going to be my life, working 40 years doing something I didn't care about, aimless, hoping the weekend comes fast enough. 5pm would come and, honestly, the afternoon made me even more depressed because I had no plans. I had just moved to Austin, Texas, and had 0 friends.
 
 So, after a grueling year, I quit. Not without a plan, of course, my anxiety does not let me make rash decisions. 2 weeks later, I started an IT graduate program. This was the first time in my life I started questioning my limiting belief around programming and coding. For once, I gave myself credit. I realized I got pretty good at understanding how the company's software worked, and I had learned so much very quickly. So, who's to say I can't do the thing?
 
@@ -38,6 +38,6 @@ I rushed and got my Master's in IT a year later. After sending out 500 applicati
 
 I knew that, eventually, I had to distance myself from being only a low-code developer to not limit myself (again), so I grinded and created a few projects and hosted them in a portfolio website to show off my coding skills. I used my low-code background as an advantage, instead of a hindrance. I designed low-code solutions and then added code on top, to make them more robust and professional.
 
-I recently got a new job that looks so much better on my resume, at a great company, and that gives me actual coding experience as an Application Engineer.
+I recently got a new job at a great company that gives me actual coding experience as a Software Developer.
 
 My goal right now is to take full advantage of my current position, and learn as much as possible. I want to end the year having completely mastered a stack, able to churn fullstack apps through pure muscle memory. I've gotten this far, and I can't wait to see my progress in a year from now.
