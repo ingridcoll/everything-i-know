@@ -1,14 +1,15 @@
 import express from "express";
+import helmet from "helmet";
 import { ValidationError, NotFoundError } from "./errors.js";
 
+// Initialize Express variables
 const app = express();
 
 const port = 3000;
 
 const router = express.Router();
 
-app.use(express.json());
-
+// Sample data
 const pokemon = [
   {
     id: 1,
@@ -66,6 +67,31 @@ const pokemon = [
   },
 ];
 
+// Express Middleware
+app.use(helmet());
+
+app.use(express.json()); // Parse responses in JSON format
+
+// Log each hit to the API
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+
+  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+
+  // After request is done, also log response headers (to test for helmet)
+  res.on("finish", () => {
+    console.log(
+      `[${timestamp}] RESPONSE HEADERS: ${res.statusCode}`,
+      res.getHeaders(),
+    );
+  });
+
+  next();
+});
+
+app.use("/api/v1/pokemon", router); // Add prefix to request and route to a defined path
+
+// Route definitions
 router.get("/", (req, res) => {
   res.json(pokemon);
 });
@@ -104,7 +130,6 @@ router.post("/", (req, res) => {
   }
 });
 
-// Update existing Pokemon
 router.put("/:id", (req, res) => {
   try {
     const selectedPokemon = findSelectedPokemon(req.params.id);
@@ -153,12 +178,12 @@ router.delete("/:id", (req, res) => {
   }
 });
 
-app.use("/api/v1/pokemon", router);
-
+// Open up port (local server)
 app.listen(3000, () =>
   console.log(`Server is running on http://localhost:${port}`),
 );
 
+// Helper functions
 function findSelectedPokemon(pokemonId) {
   const selectedPokemon = pokemon.find(
     (pokemon) => pokemon.id === Number(pokemonId),
