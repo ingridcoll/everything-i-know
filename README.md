@@ -28,7 +28,7 @@ I kinda stumbled upon coding. It was not a deliberate choice.
 
 A few years ago, I realized that I've always had this limiting belief that programming was something I could never learn how to do. I had been very quick to dismiss my own potential. Maybe because I didn't fit the stereotype of a "programmer": a guy, usually shy, who has been coding since 13 and has always been interested in techy stuff and video games. I was none of that, therefore I thought it wasn't for me.
 
-In my first corporate job, right after college, I basically configured restaurant software for clients, something like "Can you add these food items and meals to our servers' tablets?". Glorified data-entry with no coding or transferable skills, since I was only learning how to configure the company's proprietary software. 
+In my first corporate job, right after college, I basically configured restaurant software for clients, something like "Can you add these food items and meals to our servers' tablets?". Glorified data-entry with no coding or transferable skills, since I was only learning how to configure the company's proprietary software.
 
 I was extremely unhappy. I was hit by the dire realization we all experience once we work our first corporate job for a couple of months, and what that means for our life trajectory. I got scared that this was going to be my life, working 40 years doing something I didn't care about, aimless, hoping the weekend comes fast enough. 5pm would come and, honestly, the afternoon made me even more depressed because I had no plans. I had just moved to Austin, Texas, and had 0 friends.
 
