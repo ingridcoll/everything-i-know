@@ -38,6 +38,11 @@
     - [Property Naming](#property-naming)
     - [The `for...in` loop](#the-forin-loop)
     - [Objects in JavaScript Summary](#objects-in-javascript-summary)
+    - [Objects vs Arrays (for loops)](#objects-vs-arrays-for-loops)
+      - [`for...in`](#forin)
+      - [`for...of`](#forof)
+      - [The `in` Operator](#the-in-operator)
+      - [Summary Table](#summary-table)
 
 # JavaScript Fundamentals
 
@@ -1173,3 +1178,105 @@ There are many other kinds of objects in JavaScript:
 - …And so on.
 
 https://javascript.info/object-copy
+
+### Objects vs Arrays (for loops)
+
+An **object** is a collection of key-value pairs:
+
+```js
+const pokemon = { name: "Pikachu", type: "Electric", height: 0.4 };
+```
+
+You access **values** by key: `pokemon.name` or `pokemon["name"]`.
+
+An **array** is an ordered list of values:
+
+```js
+types = ["Fire", "Water", "Grass"];
+```
+
+You access **values** by index: `types[0]`. Under the hood, an array is actually a special object where the keys are `0`, `1`, `2`, etc.
+
+#### `for...in`
+
+`for...in` iterates over the keys of whatever you give it.
+
+On an object:
+
+```js
+for (const key in pokemon) {
+  console.log(key); // "name", "type", "height"
+}
+```
+
+On an array:
+
+```js
+for (const key in types) {
+  console.log(key); // "0", "1", "2" <-- indexes, not values
+}
+```
+
+This is why `for...in` on arrays is a trap. You get indexes, not the items.
+
+#### `for...of`
+
+`for...of` iterates over the values of an iterable. Arrays are iterable. Objects are not.
+
+On an array:
+
+```js
+for (const value of types) {
+  console.log(value); // "Fire", "Water", "Grass"
+}
+```
+
+On an object:
+
+```js
+for (const value of pokemon) {
+  // TypeError: pokemon is not iterable
+}
+```
+
+Objects don't have a built-in iteration order, so JavaScript refuses.
+
+`for...of` + `Object.keys()` is how you iterate over an object's keys safely:
+
+```js
+for (const key of Object.keys(pokemon)) {
+  console.log(key); // "name", "type", "height"
+  console.log(pokemon[key]); // "Pikachu", "Electric", 0.4
+}
+```
+
+`Object.keys()` converts the object's keys into an array, which `for...of` can then iterate.
+
+#### The `in` Operator
+
+Separate from the loops, `in` checks if a key exists in an object:
+
+```js
+"name" in pokemon; // true
+"speed" in pokemon; // false
+```
+
+On an array, `in` checks for indexes, not values:
+
+```js
+"0" in types; // true (index 0 exists)
+"Fire" in types; // false (not an index)
+```
+
+You want `.includes()` for arrays:
+
+```js
+Object.keys(pokemon).includes(key); // checks values, not indexes
+```
+
+#### Summary Table
+
+|            | `for...in` | `for...of` | `in` operator  |
+| ---------- | ---------- | ---------- | -------------- |
+| **Object** | keys       | TypeError  | checks keys    |
+| **Array**  | indexes    | values     | checks indexes |
