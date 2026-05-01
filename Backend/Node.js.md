@@ -25,6 +25,7 @@
     - [ORMs (Object Relational Mappers)](#orms-object-relational-mappers)
       - [Prisma (heavy abstraction, opinionated)](#prisma-heavy-abstraction-opinionated)
       - [Drizzle ORM (light, less abstraction)](#drizzle-orm-light-less-abstraction)
+        - [Step-by-step Node to PostgreSQL using Drizzle ORM](#step-by-step-node-to-postgresql-using-drizzle-orm)
 
 ## What is Node?
 
@@ -608,3 +609,332 @@ The reason Drizzle is considered "less abstraction" than Prisma:
 - The schema is just TypeScript, no new language to learn
 - The query syntax mirrors SQL structure (select, from, where, orderBy) so you can still reason about what SQL it generates
 - Prisma's `findMany` or `include` are Prisma-specific concepts that don't map directly to SQL thinking
+
+##### Step-by-step Node to PostgreSQL using Drizzle ORM
+
+Your Express app and your PostgreSQL database are two separate processes. Express is running in Node.js. PostgreSQL is running inside a Docker container. They don't automatically know about each other. To connect them, you need three things:
+
+- A driver - low level code that speaks PostgreSQL's network protocol. This is `pg`. Even when using Drizzle, this still runs underneath. Drizzle doesn't replace it, it sits on top of it.
+- A connection pool - instead of opening and closing a new database connection for every request, a pool keeps several connections open and reuses them.
+- Drizzle - sits on top of the pool, giving you type-safe queries and schema management.
+
+**Step 1: Install Dependencies**
+Run:
+
+```bash
+npm install drizzle-orm pg dotenv
+npm install -D drizzle-kit @types/pg tsx # -D marks development-only dependencies, needed while building
+```
+
+- `drizzle-kit` is a CLI tool for generating and running migrations, only needed during development
+- `tsx` runs TypeScript files directly in Node without compiling first
+
+**Step 2: Create schema and pool connection**
+Create a `db` folder inside your source code folder with two files:
+
+`db/schema.js` - Define Your Schema
+
+```js
+// Drizzle ORM Schema
+const {
+  pgTable,
+  serial,
+  varchar,
+  numeric,
+  boolean,
+  timestamp,
+} = require("drizzle-orm/pg-core");
+
+const pokemon = pgTable("pokemon", {
+  id: serial("id").primaryKey(),
+  type: varchar("type", { length: 100 }).array()notNull(),
+  height: numeric("height", { precision: 5, scale: 1 }).notNull(),
+  evolves: boolean("evolves"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+module.exports = { pokemon };
+```
+
+`db/index.js` - Create the Database Connection
+
+```js
+require("dotenv").config();
+
+const { drizzle } = require("drizzle-orm/node-postgres");
+const { Pool } = require("pg");
+const schema = require("./schema");
+
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
+
+const db = drizzle(pool, { schema });
+
+module.exports = { db };
+```
+
+Opening a database connection is expensive. It involves a network handshake, authentication, and memory allocation on both sides. If your app opens a new connection for every incoming HTTP request, and you get 100 requests per second, you're opening 100 connections per second. PostgreSQL has a hard limit on simultaneous connections and will start rejecting them. A `pool` solves this by opening a fixed number of connections upfront, say 10, and reusing them. Request comes in, borrows a connection, runs the query, returns the connection to the pool. The next request reuses that same connection. Fast, efficient, safe.
+
+Why pass `schema` to `drizzle()`?
+This gives Drizzle awareness of your table definitions, enabling relational queries later. It's optional for basic queries but a good habit to include from the start.
+
+**Step 3: Point Express to the `db`'s pool**
+
+In your app's Express server file, add the connection to the `db` to each route:
+
+`src/index.js`
+
+```js
+require("dotenv").config();
+
+const express = require("express");
+const helmet = require("helmet");
+const { ValidationError, NotFoundError } = require("./errors.js");
+const { db } = require("./db");
+const { eq } = require("drizzle-orm");
+const { pokemon } = require("./db/schema");
+
+// Initialize Express variables
+const app = express();
+const port = process.env.PORT;
+const router = express.Router();
+
+// Express Middleware
+app.use(helmet());
+app.use(express.json()); // Parse responses in JSON format
+
+// Log each hit to the API
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+
+  console.log(`[${timestamp}] ${req.method} ${req.url}`);
+
+  next();
+});
+
+app.use("/api/v1/pokemon", router); // Add prefix to request and route to a defined path
+
+// Route definitions
+// Get all Pokemon
+router.get("/", async (req, res) => {
+  try {
+    const allPokemon = await db.select().from(pokemon);
+    console.log(pokemon.name.notNull);
+    res.json(allPokemon);
+  } catch (err) {
+    res.status(500).send("Database error!");
+  }
+});
+
+// Get 1 Pokemon
+router.get("/:id", async (req, res) => {
+  try {
+    const selectedPokemon = await findSelectedPokemon(req.params.id);
+    return res.json(selectedPokemon);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(404).send(error.message);
+    }
+  }
+});
+
+// Add 1 Pokemon
+router.post("/", async (req, res) => {
+  const requestBody = req.body;
+  try {
+    validateRequestKeys(requestBody);
+    validateRequiredKeys(requestBody);
+
+    const [newPokemon] = await db
+      .insert(pokemon)
+      .values(requestBody)
+      .returning();
+
+    res.status(201).json(newPokemon);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      res.status(400).send(error.message);
+    } else {
+      res.status(500).json(`ERROR: ${error}`);
+    }
+  }
+});
+
+// Update 1 Pokemon
+router.put("/:id", async (req, res) => {
+  try {
+    const pokemonId = req.params.id;
+    const selectedPokemon = await findSelectedPokemon(pokemonId);
+    const requestBody = req.body;
+
+    validateRequestKeys(requestBody);
+
+    const [updatedPokemon] = await db
+      .update(pokemon)
+      .set(requestBody)
+      .where(eq(pokemon.id, Number(pokemonId)))
+      .returning();
+
+    res.status(200).json(updatedPokemon);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(404).send(error.message);
+    } else if (error instanceof ValidationError) {
+      res.status(400).send(error.message);
+    } else {
+      res.status(500).json(`ERROR: ${error}`);
+    }
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const pokemonId = req.params.id;
+    const selectedPokemon = await findSelectedPokemon(pokemonId);
+
+    const [deletedPokemon] = await db
+      .delete(pokemon)
+      .where(eq(pokemon.id, pokemonId))
+      .returning();
+
+    res.status(200).json(deletedPokemon);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(404).send(error.message);
+    } else {
+      res.status(500).send("Something went wrong!");
+    }
+  }
+});
+
+// Open up port (local server)
+app.listen(port, () =>
+  console.log(`Server is running on http://localhost:${port}`),
+);
+
+// Helper functions
+async function findSelectedPokemon(pokemonId) {
+  const selectedPokemon = await db
+    .select()
+    .from(pokemon)
+    .where(eq(pokemon.id, Number(pokemonId)));
+
+  if (Array.isArray(selectedPokemon) && selectedPokemon.length > 0) {
+    return selectedPokemon;
+  } else {
+    throw new NotFoundError(`Pokemon with ID #${pokemonId} not found.`);
+  }
+}
+
+function validateRequestKeys(requestBody) {
+  if (Object.keys(requestBody).length > 0) {
+    for (const key in requestBody) {
+      if (Object.keys(pokemon).includes(key)) {
+        continue;
+      } else {
+        throw new ValidationError(`${key} does not match the Pokemon schema.`);
+      }
+    }
+  } else {
+    throw new ValidationError(
+      "The request body is empty. Please provide a body in JSON format for POST and PUT requests.",
+    );
+  }
+
+  return true;
+}
+
+function validateRequiredKeys(requestBody) {
+  for (const key of Object.keys(pokemon)) {
+    const isRequired =
+      pokemon[key].notNull && key != "id" && key != "createdAt";
+    const isEmpty =
+      typeof requestBody[key] == "string" && requestBody[key].length === 0;
+    const isMissing = !(key in requestBody);
+    if (isRequired && (isMissing || isEmpty)) {
+      throw new ValidationError(
+        `${key} is a required key, please provide a value.`,
+      );
+    }
+  }
+  return true;
+}
+```
+
+**Step 4: Syncing the database schema to Drizzle ORM's schema**
+
+Right now your database schema (the actual PostgreSQL tables) and your Drizzle schema (`src/db/schema.js`) are out of sync because you created the table manually in DBeaver. A migration is a recorded SQL change that brings the database in line with your schema file. Drizzle Kit compares your schema file against the actual database and generates the SQL needed to make them match.
+
+Install `npm install -D drizzle-kit` if you haven't.
+
+Create `drizzle.config.js` in your project root:
+
+```js
+require("dotenv").config();
+
+module.exports = {
+  schema: "./src/db/schema.js",
+  out: "./drizzle",
+  dialect: "postgresql",
+  dbCredentials: {
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT),
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+  },
+};
+```
+
+Add scripts to `package.json`:
+
+```json
+"scripts": {
+  "dev": "node src/index.js",
+  "db:generate": "drizzle-kit generate",
+  "db:migrate": "drizzle-kit migrate"
+}
+```
+
+Generate the migration:
+
+```bash
+npm run db:generate
+```
+
+This creates a `drizzle/folder` with a `.sql` file containing the SQL Drizzle will run. **Always read this file before running the migration.** Never apply a migration you haven't reviewed.
+
+Apply the migration:
+
+```bash
+npm run db:migrate
+```
+
+This runs the SQL against your database and syncs it with your schema file.
+
+The `drizzle/` folder should be committed to git. It's your migration history, the complete record of every change ever made to your database structure.
+
+**Step 5: Start up the Express server and database host (Docker)**
+
+Start the Docker container that is hosting the database by running:
+
+```bash
+# First time only
+docker compose up
+
+# Restarting a stopped container
+docker start <containerName>
+```
+
+From your project's root, run:
+
+```bash
+node --watch src/index.js
+```
+
+Now, navigating to `http://localhost:<port>/api/v1/pokemon`, should display your database items.

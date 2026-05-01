@@ -1,4 +1,4 @@
--- April 30th, 2026 schema
+-- Raw PostgreSQL schema
 create table pokemon(
 id serial primary key,
 name varchar(100) not null,
