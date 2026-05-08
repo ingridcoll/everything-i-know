@@ -20,6 +20,10 @@
 - [Passing Data via Props and Interfaces](#passing-data-via-props-and-interfaces)
 - [Passing Functions via Props](#passing-functions-via-props)
 - [Passing Children to a Component](#passing-children-to-a-component)
+- [React Router](#react-router)
+  - [How React Router works](#how-react-router-works)
+  - [Why BrowserRouter wraps everything](#why-browserrouter-wraps-everything)
+  - [Nested routes and Outlet](#nested-routes-and-outlet)
 
 # Root of the application
 
@@ -495,3 +499,72 @@ export default function App() {
   );
 }
 ```
+
+# React Router
+
+In a traditional website, when you go to `/dashboard`, the browser sends a request to a server, which returns a completely new HTML page.
+
+React apps don't work this way. They load a single HTML file (`index.html`) once. Everything after that is JavaScript swapping components in and out without ever requesting a new page from the server. This is called a Single Page Application (SPA).
+
+The URL still changes (so bookmarks and the back button work), but the browser never actually navigates anywhere. React Router intercepts the URL change and decides which component to render.
+
+## How React Router works
+
+```ts
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+```
+
+- `BrowserRouter`. The browser has a built-in API called the History API. It lets JavaScript read and change the URL in the address bar without triggering a full page reload. `BrowserRouter` is a component that sits at the top of your app and listens to this API. When the URL changes, `BrowserRouter` captures the new path and stores it in React Context. Think of Context as a value that's been made available to every component in the tree below it, like a shared variable that any child can read without you passing it down manually through props. So when you're deep inside a `Settings` component and you want to know the current URL, or navigate somewhere, you can access it because BrowserRouter put it in Context at the top.
+- `Routes` is just a selector. It reads the current URL from Context (put there by `BrowserRouter`) and looks through all its direct `Route` children to find the one whose path matches. It renders the first match and ignores the rest.
+- `Route` takes two key props:
+  - `path`: the URL pattern to match against
+  - `element`: the component to render when it matches
+
+When the URL is `/`, React renders `Dashboard`. When it's `/settings`, it renders `Settings`. No server involved.
+
+## Why BrowserRouter wraps everything
+
+React uses a pattern called Context to pass data through a component tree without manually passing props at every level. `BrowserRouter` uses this to make the current URL available to any component inside it, no matter how deeply nested. If a component outside `BrowserRouter` tries to use routing features, it will crash because it has no access to that context.
+
+## Nested routes and Outlet
+
+Look at this structure:
+
+```ts
+<Routes>
+  <Route element={<Layout><Outlet /></Layout>}>
+    <Route path="/" element={<Dashboard />} />
+  </Route>
+</Routes>
+```
+
+There are two levels of Route here. The outer one has no path. The inner one has `path="/"`.
+
+Why nest them?
+The outer route is not a page. It's a wrapper. It exists to say: "every route inside me should be wrapped in this `Layout` component." This means the sidebar and header render once, and only the content area swaps out when the URL changes. Without this pattern, you'd have to import and render your sidebar inside every single page component. Change the sidebar? Update every page. That violates the single responsibility principle: your `Dashboard` page should not know or care about the sidebar.
+
+`Outlet` is a placeholder. It tells React Router: "render the matched child route here."
+
+When the URL is `/`, React Router matches `<Route path="/" element={<Dashboard />} />`. It then looks at its parent route and sees `<Outlet />` inside `<Layout>`. It replaces that `<Outlet />` with `<Dashboard />`.
+So the final render looks like:
+
+```ts
+<Layout>
+  <Dashboard /> ← Outlet got replaced with this
+</Layout>
+```
+
+The Layout renders once. Only the Outlet slot changes as you navigate.

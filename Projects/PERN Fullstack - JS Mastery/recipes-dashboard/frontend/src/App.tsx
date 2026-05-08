@@ -1,7 +1,17 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Layout from "./components/Layout";
+
 const App = () => {
   return (
     <>
-      <p>hello</p>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 };
